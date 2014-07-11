@@ -1,0 +1,89 @@
+package cron;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class TriggerTaskExecutor {
+	
+	private ExecutorService service = Executors.newCachedThreadPool();
+	private RefreshDelayQueue<TaskTrigger> taskDelayQueue = new RefreshDelayQueue<TaskTrigger>();
+	private static final int thread_num = 1;
+	
+	public TriggerTaskExecutor() {
+		for(int i=0; i < thread_num; i++) {
+			service.execute(new Runnable() {
+				
+				public void run() {
+					while(!service.isShutdown()) {
+						try {
+							TaskTrigger trigger = taskDelayQueue.take();
+							trigger.trigger();
+							if(trigger.canTrigger()) {
+								taskDelayQueue.add(trigger);
+							}
+						} catch (InterruptedException e) {
+						}
+						
+					}
+					
+				}
+			});
+		}
+	}
+
+	public void addTask(TriggerTask task) {
+		if(task.canTrigger()) {
+			taskDelayQueue.add(new TaskTrigger(task));
+		}
+	}
+	
+	public void addAllTask(Collection<? extends TriggerTask> taskCollection) {
+		List<TaskTrigger> taskList = new ArrayList<TaskTrigger>(taskCollection.size());
+		for(TriggerTask task : taskCollection) {
+			if(task.canTrigger()) {
+				taskList.add(new TaskTrigger(task));
+			}
+		}
+		taskDelayQueue.addAll(taskList);
+	}
+	
+	public void refresh() {
+		taskDelayQueue.refresh();
+	}
+	
+	
+	private static class TaskTrigger implements Delayed{
+		private TriggerTask triggerTask;
+		
+		public TaskTrigger(TriggerTask triggerTask) {
+			this.triggerTask = triggerTask;
+		}
+
+		public int compareTo(Delayed o) {
+			return (int)(getDelay(TimeUnit.MILLISECONDS) - o.getDelay(TimeUnit.MILLISECONDS));
+		}
+
+		public long getDelay(TimeUnit unit) {
+			long delay = Math.max(getTriggerTime() - System.currentTimeMillis(), 0);
+			return unit.convert(delay, TimeUnit.MILLISECONDS);
+		}
+
+		public void trigger() {
+			triggerTask.trigger(triggerTask.getTriggerTime());
+		}
+
+		public long getTriggerTime() {
+			return triggerTask.getTriggerTime();
+		}
+		
+		public boolean canTrigger() {
+			return triggerTask.canTrigger();
+		}
+
+	}
+}
