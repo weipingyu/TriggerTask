@@ -3,7 +3,6 @@ package cron;
 public class CronTriggerTask implements TriggerTask {
 
 	public void trigger(long time) {
-		// TODO Auto-generated method stub
 
 	}
 
