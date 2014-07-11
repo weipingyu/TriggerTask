@@ -12,7 +12,6 @@ public abstract class FixDelayTriggerTask implements TriggerTask{
 	}
 
 	public boolean canTrigger() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
