@@ -8,8 +8,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TriggerTaskExecutor {
 	
+	private static final Logger LOGGER = LoggerFactory.getLogger(TriggerTaskExecutor.class);
 	private ExecutorService service = Executors.newCachedThreadPool();
 	private RefreshDelayQueue<TaskTrigger> taskDelayQueue = new RefreshDelayQueue<TaskTrigger>();
 	private static final int thread_num = 1;
@@ -26,7 +30,8 @@ public class TriggerTaskExecutor {
 							if(trigger.canTrigger()) {
 								taskDelayQueue.add(trigger);
 							}
-						} catch (InterruptedException e) {
+						} catch (Exception e) {
+							LOGGER.error("", e);
 						}
 						
 					}
@@ -74,7 +79,11 @@ public class TriggerTaskExecutor {
 		}
 
 		public void trigger() {
-			triggerTask.trigger(triggerTask.getTriggerTime());
+			try {
+				triggerTask.trigger(triggerTask.getTriggerTime());
+			} catch (Exception e) {
+				LOGGER.error("", e);
+			}
 		}
 
 		public long getTriggerTime() {

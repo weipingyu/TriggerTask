@@ -3,7 +3,6 @@ package cron;
 public abstract class FixDelayTriggerTask implements TriggerTask{
 
 	public void trigger(long time) {
-		// TODO Auto-generated method stub
 		
 	}
 
