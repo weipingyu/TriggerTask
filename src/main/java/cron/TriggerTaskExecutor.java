@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 public class TriggerTaskExecutor {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(TriggerTaskExecutor.class);
-	private ExecutorService service = Executors.newCachedThreadPool();
+	private ExecutorService service = Executors.newCachedThreadPool(new SimpleThreadFactory("TriggerTaskExecutor"));
 	private RefreshDelayQueue<TaskTrigger> taskDelayQueue = new RefreshDelayQueue<TaskTrigger>();
 	private static final int thread_num = 1;
 	
