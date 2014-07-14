@@ -14,6 +14,7 @@ public class CronTest {
 		System.out.println(DateFormatUtils.format(new Date(fastCronParser.getTimeBefore(System.currentTimeMillis())),"yyyy-MM-dd HH:mm:ss"));
 
 		System.out.println("dev");
+		System.out.println("dev2");
 		
 	}
 
