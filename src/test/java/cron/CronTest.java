@@ -13,6 +13,8 @@ public class CronTest {
 		FastCronParser fastCronParser = new FastCronParser("0 6 * * *");
 		System.out.println(DateFormatUtils.format(new Date(fastCronParser.getTimeBefore(System.currentTimeMillis())),"yyyy-MM-dd HH:mm:ss"));
 
+		
+		
 	}
 
 }
