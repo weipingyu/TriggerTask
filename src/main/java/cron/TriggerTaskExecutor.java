@@ -61,6 +61,10 @@ public class TriggerTaskExecutor {
 		taskDelayQueue.refresh();
 	}
 	
+	public void shutdown() {
+		service.shutdownNow();
+	}
+	
 	
 	private static class TaskTrigger implements Delayed{
 		private TriggerTask triggerTask;
