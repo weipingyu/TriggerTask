@@ -99,4 +99,50 @@ public class TriggerTaskExecutor {
 		}
 
 	}
+
+	public boolean isShutdown() {
+		return service.isShutdown();
+	}
+
+
+	public void execute(final Runnable command) {
+		TriggerTask task = new ImmediateTriggerTask() {
+			
+			@Override
+			protected void handle(long time) {
+				command.run();
+			}
+		};
+		addTask(task);
+	}
+
+	public void schedule(Runnable command, long delay,
+			TimeUnit unit) {
+		scheduleWithFixedDelay(command, 0, delay, unit);
+	}
+
+	public void scheduleAtFixedRate(final Runnable command,
+			long initialDelay, long period, TimeUnit unit) {
+		TriggerTask task = new FixedRateTriggerTask(unit.toMillis(initialDelay), unit.toMillis(period)) {
+			
+			@Override
+			protected void handle(long time) {
+				command.run();
+			}
+		};
+		addTask(task);
+	}
+
+	public void scheduleWithFixedDelay(final Runnable command,
+			long initialDelay, long delay, TimeUnit unit) {
+		TriggerTask task = new FixedDelayTriggerTask(unit.toMillis(initialDelay), unit.toMillis(delay)) {
+			
+			@Override
+			protected void handle(long time) {
+				command.run();
+			}
+		};
+		
+		addTask(task);
+	}
 }
